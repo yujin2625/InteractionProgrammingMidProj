@@ -1,12 +1,13 @@
+using Python.Runtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using System;
 using System.Diagnostics;
-using TMPro;
-using UnityEditor.Scripting.Python;
-using Python.Runtime;
 using System.IO;
+using TMPro;
+using UnityEditor;
+using UnityEditor.Scripting.Python;
+using UnityEngine;
 
 public class PythonInUnity : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class PythonInUnity : MonoBehaviour
     void Start()
     {
         readResult = gameObject.GetComponent<ReadResult>();
+        PythonEngine.Initialize();
     }
     public void PythonExecuteTry()
     {
@@ -119,24 +121,33 @@ file.close();
 
     public void PythonExecute()
     {
-        try
+        using (Py.GIL())
         {
-            Process process = new();
-            process.StartInfo.FileName = @"C:\Users\yujin\AppData\Local\Programs\Python\Python310\python.exe";
-            process.StartInfo.Arguments = Application.streamingAssetsPath + "/감정인식/EmotionClassificationModel.py";
+            PythonRunner.RunFile("Assets/감정인식/python_script.py");
 
-            //process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.CreateNoWindow = true;
+        }
 
-            process.Start();
-            process.WaitForExit();
-            readResult.DisplayResult();
-        }
-        catch(Exception e)
-        {
-            UnityEngine.Debug.LogError("Unable to launch app: " + e.Message);
-            readResult.DisplayFail(e.Message);
-        }
+        //try
+        //{
+        //    Process process = new();
+        //    process.StartInfo.FileName = @"C:\Users\yujin\AppData\Local\Programs\Python\Python310\python.exe";
+        //    process.StartInfo.Arguments = Application.streamingAssetsPath + "/감정인식/EmotionClassificationModel.py";
+
+        //    //process.StartInfo.RedirectStandardOutput = true;
+        //    process.StartInfo.CreateNoWindow = true;
+
+        //    process.Start();
+        //    process.WaitForExit();
+        //    readResult.DisplayResult();
+        //}
+        //catch(Exception e)
+        //{
+        //    UnityEngine.Debug.LogError("Unable to launch app: " + e.Message);
+        //    readResult.DisplayFail(e.Message);
+        //}
+
+
+
         //Process.Start(Application.streamingAssetsPath + "/감정인식/dist/EmotionClassificationModel.exe");
         //try
         //{
